@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const connectDB = async ()=>{
     try{
         mongoose.connection.on('connected',()=>console.log("Database connected"))
-        await mongoose.connect(`${process.env.MONGODB_URL}/SkillNet`)
+        await mongoose.connect(`${process.env.MONGODB_URL}SkillNet`)
     }catch(error){
         console.log(error.message);
     }
