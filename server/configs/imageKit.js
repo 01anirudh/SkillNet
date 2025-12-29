@@ -6,6 +6,7 @@
 //   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
 // });
 
+import 'dotenv/config';
 import ImageKit from '@imagekit/nodejs';
 
 const imageKit = new ImageKit({
