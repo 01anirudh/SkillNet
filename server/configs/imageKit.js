@@ -15,9 +15,29 @@ import ImageKit from '@imagekit/nodejs';
 //   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
 // });
 
-const imageKit = new ImageKit({
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY, // This is the default and can be omitted
-});
+let imageKit;
+
+try {
+  if (process.env.IMAGEKIT_PRIVATE_KEY && process.env.IMAGEKIT_PUBLIC_KEY && process.env.IMAGEKIT_URL_ENDPOINT) {
+    imageKit = new ImageKit({
+      publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+      privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+      urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
+    });
+  } else {
+    console.warn("⚠️ ImageKit environment variables missing. Uploads will fail.");
+    imageKit = {
+      upload: () => Promise.reject(new Error("ImageKit not configured (missing env vars)")),
+      url: () => "",
+    };
+  }
+} catch (error) {
+  console.error("⚠️ ImageKit initialization failed:", error.message);
+  imageKit = {
+    upload: () => Promise.reject(new Error("ImageKit initialization failed")),
+    url: () => "",
+  };
+}
 
 // URL with basic transformations
 // export const transformedUrl = client.helper.buildSrc({
