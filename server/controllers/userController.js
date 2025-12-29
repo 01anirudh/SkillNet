@@ -51,72 +51,72 @@ export const updateUserData = async (req, res) => {
         const cover = req.files.cover && req.files.cover[0];
 
         if (profile) {
-            const buffer = fs.readFileSync(profile.path)
-            const response = imageKit.upload({
-                file:buffer,
-                filename:profile.originalname,
+            // const buffer = fs.readFileSync(profile.path)
+            // const response = imageKit.upload({
+            //     file:buffer,
+            //     filename:profile.originalname,
 
-            })
-            // const response = await imageKit.files.upload({ file: fs.createReadStream(profile.path), fileName: profile.originalname });
+            // })
+            const response = await imageKit.files.upload({ file: fs.createReadStream(profile.path), fileName: profile.originalname });
 
 
-            const url = imageKit.url({
-                path:response.filePath,
-                transformation:[
-                    {quality:'auto'},
-                    {format:'webp'},
-                    {width:'512'}
-                ]
-            })
+            // const url = imageKit.url({
+            //     path:response.filePath,
+            //     transformation:[
+            //         {quality:'auto'},
+            //         {format:'webp'},
+            //         {width:'512'}
+            //     ]
+            // })
 
-            // const url = imageKit.helper.buildSrc({
-            //     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-            //     src: response.filePath,
-            //     transformation: [
-            //         {
-            //             width: 512,
-            //             //   height: 300,
-            //             //   crop: 'maintain_ratio',
-            //             quality: 'auto',
-            //             format: 'webp',
-            //         },
-            //     ],
-            // });
+            const url = imageKit.helper.buildSrc({
+                urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+                src: response.filePath,
+                transformation: [
+                    {
+                        width: 512,
+                        //   height: 300,
+                        //   crop: 'maintain_ratio',
+                        quality: 'auto',
+                        format: 'webp',
+                    },
+                ],
+            });
             updatedData.profile_picture = url;
         }
 
         if (cover) {
-            const buffer = fs.readFileSync(cover.path)
-            const response = imageKit.upload({
-                file:buffer,
-                filename:profile.originalname,
+            // const buffer = fs.readFileSync(cover.path)
+            // const response = imageKit.upload({
+            //     file:buffer,
+            //     filename:profile.originalname,
 
-            })
+            // })
 
-            // const response = await imageKit.files.upload({ file: fs.createReadStream(cover.path), fileName: profile.originalname });
+            const response = await imageKit.files.upload({ file: fs.createReadStream(cover.path), fileName: profile.originalname });
 
-            const url = imageKit.url({
-                path:response.filePath,
-                transformation:[
-                    {quality:'auto'},
-                    {format:'webp'},
-                    {width:'1280'}
-                ]
-            })
+            // const url = imageKit.url({
+            //     path:response.filePath,
+            //     transformation:[
+            //         {quality:'auto'},
+            //         {format:'webp'},
+            //         {width:'1280'}
+            //     ]
+            // })
 
-            // const url = imageKit.helper.buildSrc({
-            //     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-            //     src: response.filePath,
-            //     transformation: [
-            //         {
-            //             width: 1280,
-            //             //   height: 300,
-            //             //   crop: 'maintain_ratio',
-            //             quality: 'auto',
-            //             format: 'webp',
-            //         },
-            //     ],
-            // });
+            const url = imageKit.helper.buildSrc({
+                urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+                src: response.filePath,
+                transformation: [
+                    {
+                        width: 1280,
+                        //   height: 300,
+                        //   crop: 'maintain_ratio',
+                        quality: 'auto',
+                        format: 'webp',
+                    },
+                ],
+            });
             updatedData.cover_photo = url;
         }
 
