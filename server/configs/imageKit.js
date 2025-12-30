@@ -19,7 +19,7 @@ let imageKit;
 
 
     imageKit = new ImageKit({
-      privateKey: process.env[IMAGEKIT_PRIVATE_KE],
+      privateKey: process.env[IMAGEKIT_PRIVATE_KEY],
     });
  
 
