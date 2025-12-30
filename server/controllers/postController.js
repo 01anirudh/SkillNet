@@ -15,14 +15,7 @@ export const addPost = async (req,res) => {
         if(images.length){
             images_urls = await Promise.all(
                 images.map(async (image)=>{
-                    // const fileBuffer = fs.readFileSync(image.path);
-                    // // const buffer = fs.readFileSync(profile.path)
-                    // const response = imageKit.upload({
-                    //     file:fileBuffer,
-                    //     filename:image.originalname,
-                    //     folder:'posts',
-
-                    // })
+         
                     const response = await imageKit.files.upload({ 
                         file: fs.createReadStream(image.path), 
                         fileName: image.originalname, 
@@ -30,23 +23,12 @@ export const addPost = async (req,res) => {
                     });
 
 
-                    // const url = imageKit.url({
-                    //     path:response.filePath,
-                    //     transformation:[
-                    //         {quality:'auto'},
-                    //         {format:'webp'},
-                    //         {width:'1280'}
-                    //     ]
-                    // })
-
                     const url = imageKit.helper.buildSrc({
                         urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
                         src: response.filePath,
                         transformation: [
                             {
                                 width: 1280,
-                                //   height: 300,
-                                //   crop: 'maintain_ratio',
                                 quality: 'auto',
                                 format: 'webp',
                             },
@@ -93,7 +75,7 @@ export const likePost = async (req,res) => {
         const post = await Post.findById(postId);
 
         if(post.likes_count.includes(userId)){
-            post.likes_count = posts.likes_count.filter(user=>user!== userId);
+            post.likes_count = post.likes_count.filter(user=>user!== userId);
             await post.save();
             res.json({success:true,message:'Post unliked'});
         }else {
