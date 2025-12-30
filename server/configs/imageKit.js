@@ -24,6 +24,7 @@ try {
       privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
       urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
     });
+    console.log("✅ ImageKit initialized successfully");
   } else {
     console.warn("⚠️ ImageKit environment variables missing. Uploads will fail.");
     imageKit = {
