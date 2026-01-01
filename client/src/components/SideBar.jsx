@@ -12,42 +12,42 @@ const SideBar = ({ sideBarOpen, setSideBarOpen }) => {
   const { signOut } = useClerk();
   return (
     <div
-      className={`w-60 xl:w-72 bg-white border-r border-gray-200 flex flex-col justify-between items-center max-sm:absolute top-0 bottom-0 z-20
+      className={`w-60 xl:w-72 bg-white border-r border-slate-200 flex flex-col justify-between items-center max-sm:absolute top-0 bottom-0 z-20 h-screen
             ${
-              sideBarOpen ? "translate-x-0" : "max-sm:-translate-x-full"
+              sideBarOpen ? "translate-x-0 shadow-2xl" : "max-sm:-translate-x-full"
             } transition-all duration-300 ease-in-out`}
     >
       <div className="w-full">
         <img
           onClick={() => navigate("/")}
           src={assets.logo}
-          className="w-26 ml-7 my-2 cursor-pointer"
-          alt=""
+          className="w-28 ml-7 my-4 cursor-pointer"
+          alt="SkillNet"
         />
-        <hr className="border-gray-300 mb-8" />
-
-        <MenuItems setSideBarOpen={setSideBarOpen} />
+        
+        <div className="px-4">
+            <MenuItems setSideBarOpen={setSideBarOpen} />
+        </div>
 
         <Link
           to="/create-post"
-          className="flex items-center justify-center gap-2 py-2.5 mt-6 mx-6 rounded-lg bg-gradient-to-r from-indigo-500
-            to-purple-600 hover:from-indigo-700 hover:to-purple-800 active:scale-95 transition text-white cursor-pointer"
+          className="flex items-center justify-center gap-2 py-3 mt-6 mx-6 rounded-xl bg-blue-700 hover:bg-blue-800 active:scale-95 transition text-white font-medium shadow-md shadow-blue-200"
         >
-          <CirclePlus className="w-4 h-5" />
+          <CirclePlus className="w-5 h-5" />
           Create Post
         </Link>
       </div>
-      <div className="w-full border-t border-gray-200 p-4 px-7 flex items-center justify-between">
-        <div className="flex gap-2 items-center cursor-pointer">
+      <div className="w-full border-t border-slate-200 p-5 flex items-center justify-between hover:bg-slate-50 transition cursor-pointer">
+        <div className="flex gap-3 items-center">
           <UserButton />
           <div>
-            <h1 className="text-sm font-medium">{user.full_name}</h1>
-            <p className="text-xs text-gray-500">@{user.username}</p>
+            <h1 className="text-sm font-semibold text-slate-700">{user.full_name}</h1>
+            <p className="text-xs text-slate-400">@{user.username}</p>
           </div>
         </div>
         <LogOut
           onClick={signOut}
-          className="w-4.5 text-gray-400 hover:text-gray-700 transition cursor-pointer"
+          className="w-5 text-slate-400 hover:text-red-500 transition cursor-pointer"
         />
       </div>
     </div>

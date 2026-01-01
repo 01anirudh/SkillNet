@@ -17,9 +17,10 @@ import { fetchUser } from './features/user/userSlice'
 import { fetchConnections } from './features/connections/connectionSlice'
 import { addMessage } from './features/messages/meesagesSlice'
 import Notification from './components/Notification'
+import Loading from './components/Loading'
 
 const App = () => {
-  const {user} = useUser();
+  const {user, isLoaded} = useUser();
   const {getToken} = useAuth();
   const {pathname} = useLocation()
   const pathnameRef = useRef(pathname)
@@ -63,6 +64,10 @@ const App = () => {
       
     }
   },[user,dispatch])
+
+  if (!isLoaded) {
+    return <Loading />
+  }
 
   return (
     <>

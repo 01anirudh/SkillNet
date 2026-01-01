@@ -8,9 +8,9 @@ const MenuItems = ({setSideBarOpen}) => {
         {
             menuItemsData.map(({to,label,Icon})=>(
                 <NavLink key={to} to={to} end = {to === '/'} onClick={()=>setSideBarOpen(false)}
-                className={(isActive)=>`px-3.5 py-2 flex items-center gap-3 rounded-xl ${isActive ? "bg-indigo-50 text-indigo-700" : "hover:bg-gray-50"}`}> 
+                className={({isActive})=>`px-4 py-3 flex items-center gap-3 rounded-lg transition duration-200 ${isActive ? "bg-blue-50 text-blue-700 font-semibold" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}> 
                     <Icon className="w-5 h-5"/>
-                    {label}
+                    <span className="font-medium">{label}</span>
                 </NavLink>
             ))
         }

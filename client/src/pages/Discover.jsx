@@ -36,11 +36,31 @@ const Discover = () => {
         }
     } 
 
+    const [suggestedUsers, setSuggestedUsers] = useState([]);
+    
+    // ... handleSearch ...
+
+    const fetchSuggestedUsers = async () => {
+         try {
+            const token = await getToken();
+            const { data } = await api.get('/api/user/suggested?limit=20', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (data.success) {
+                setSuggestedUsers(data.users);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(()=>{
         getToken().then((token)=>{
             dispatch(fetchUser(token))
-        })
-    })
+        });
+        fetchSuggestedUsers();
+    },[])
 
 
   return (
@@ -73,6 +93,20 @@ const Discover = () => {
                     <UserCard user={user} key={user._id}/>
                 ))}
             </div>
+
+            {/* Suggestions Section (only when no search results and input is empty) */}
+             {!loading && users.length === 0 && input === '' && (
+                <div className='mt-10'>
+                    <h2 className='text-xl font-bold text-slate-800 mb-6'>People you may know</h2>
+                    <div className='flex flex-wrap gap-6'>
+                         {suggestedUsers.length > 0 ? suggestedUsers.map((user)=>(
+                            <UserCard user={user} key={user._id}/>
+                        )) : (
+                            <p className='text-slate-500'>No suggestions available at the moment.</p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {
                 loading && (<Loading height='60vh'/>)

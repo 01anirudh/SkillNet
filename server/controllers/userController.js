@@ -304,3 +304,33 @@ export const getUserProfiles = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 }
+    // Get Suggested Users
+    export const getSuggestedUsers = async (req, res) => {
+        try {
+            const { userId } = req.auth();
+            const limit = parseInt(req.query.limit) || 5;
+
+            // Get current user to access their following list
+            const currentUser = await User.findById(userId);
+
+            if (!currentUser) {
+                return res.json({ success: false, message: "User not found" });
+            }
+
+            // Find users who are NOT the current user AND NOT already followed
+            const users = await User.find({
+                _id: {
+                    $ne: userId,
+                    $nin: currentUser.following
+                }
+            })
+                .limit(limit)
+                .select('-password -email'); // Exclude sensitive info
+
+            res.json({ success: true, users });
+
+        } catch (error) {
+            console.log(error);
+            res.json({ success: false, message: error.message });
+        }
+    }

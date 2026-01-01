@@ -19,27 +19,27 @@ const Messeges = () => {
                 <p className='text-slate-600'>Talk to your Connections</p>
             </div>
             {/* Connected Users */}
-            <div className='flex flex-col gap-3'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                 {connections.map((user)=>(
-                    <div key={user._id} className='max-w-xl flex flex-warp gap-5 p-6 bg-white shadow rounded-md'>
-                        <img src={user.profile_picture} alt="" className='rounded-full size-12 mx-auto' />
-                        <div className='flex-1'>
-                            <p className='font-medium text-slate-700'>{user.full_name}</p>
-                            <p className='text-slate-500'>@{user.username}</p>
-                            <p className='text-sm text-gray-600'>{user.bio}</p>
-                        </div>
+                    <div key={user._id} className='flex gap-4 p-5 bg-white shadow-sm border border-slate-200 rounded-xl hover:shadow-md transition-all duration-300 group'>
+                        <img src={user.profile_picture} alt="" className='rounded-full w-12 h-12 object-cover ring-2 ring-slate-50 group-hover:ring-blue-100 transition' />
+                        <div className='flex-1 min-w-0'>
+                            <p className='font-semibold text-slate-800 truncate'>{user.full_name}</p>
+                            <p className='text-slate-500 text-sm truncate'>@{user.username}</p>
+                            <p className='text-sm text-slate-400 mt-1 line-clamp-1'>{user.bio || "No bio available"}</p>
+                            
+                            <div className='flex gap-2 mt-4'>
+                                <button onClick={()=>navigate(`/message/${user._id}`)} className='flex-1 py-2 text-sm font-medium rounded-lg bg-blue-700 text-white hover:bg-blue-800
+                                active:scale-95 transition cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-blue-100'>
+                                   <MessageSquare className='w-4 h-4' />
+                                   Message
+                                </button>
 
-                        <div className='flex flex-col gap-2 mt-4'>
-                            <button onClick={()=>navigate(`/message/${user._id}`)} className='size-10 flex items-center justify-center text-sm rounded bg-slate-100 hover:bg-slate-200 text-slate-800
-                            active:scale-95 transition cursor-pointer gap-1'>
-                               <MessageSquare className='w-4 h-4' />
-                            </button>
-
-                            <button onClick={()=>navigate(`/profile/${user._id}`)}className='size-10 flex items-center justify-center text-sm rounded bg-slate-100 hover:bg-slate-200 text-slate-800
-                            active:scale-95 transition cursor-pointer '>
-                               <Eye className='w-4 h-4' />
-                            </button>
-
+                                <button onClick={()=>navigate(`/profile/${user._id}`)} className='px-3 py-2 text-sm rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-blue-700
+                                active:scale-95 transition cursor-pointer border border-slate-200'>
+                                   <Eye className='w-4 h-4' />
+                                </button>
+                            </div>
                         </div>
 
                     </div>
