@@ -4,9 +4,10 @@ import { X, Menu } from "lucide-react";
 import { dummyUserData } from "../assets/assets";
 import Loading from "../components/Loading";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const Layout = () => {
-  const user = dummyUserData;
+  const user = useSelector((state)=>state.user.value);
   const [sideBarOpen, setSideBarOpen] = useState(false);
   return user ? (
     <div className="w-full flex h-screen">

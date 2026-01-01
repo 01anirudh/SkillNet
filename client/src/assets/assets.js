@@ -17,7 +17,7 @@ export const assets = {
 
 export const menuItemsData = [
     { to: '/', label: 'Feed', Icon: Home },
-    { to: '/messages', label: 'Messages', Icon: MessageCircle },
+    { to: '/message', label: 'Messages', Icon: MessageCircle },
     { to: '/connections', label: 'Connections', Icon: Users },
     { to: '/discover', label: 'Discover', Icon: Search },
     { to: '/profile', label: 'Profile', Icon: UserIcon },
@@ -262,7 +262,7 @@ export const dummyMessagesData = [
         "createdAt": "2025-07-25T10:44:12.753Z",
         "updatedAt": "2025-07-25T10:44:12.753Z",
     },
-        {
+    {
         "_id": "6878cc2817a54e4d3748010c",
         "from_user_id": "user_2zdFoZib5lNr614LgkONdD8WG32",
         "to_user_id": "user_2zwZSCMRXQ9GaEEVLgm6akQo96i",

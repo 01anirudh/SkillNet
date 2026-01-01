@@ -1,4 +1,6 @@
 
+import fs from 'fs';
+import imageKit from '../configs/imageKit.js';
 import Story from "../models/story.js";
 import User from "../models/user.js";
 import { inngest } from "../inngest/index.js";
@@ -6,25 +8,36 @@ import { inngest } from "../inngest/index.js";
 // Add User Story
 
 
-export const addUserStory = async (req,res) =>{
-    try{
-        const {userId} = req.auth;
-        const {content,media_type,background_color} = req.body;
+export const addUserStory = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { content, media_type, background_color } = req.body;
         const media = req.file;
 
         let media_url = ''
 
         // upload media to imageKit
-        if(media_type == 'image' || media.type == 'video'){
-            const response = await imageKit.files.upload({ 
-                        file: fs.createReadStream(media.path), 
-                        fileName: media.originalname, 
-                    });
-            media_url = response;
+        if (media_type == 'image' || media_type == 'video') {
+            const response = await imageKit.files.upload({
+                file: fs.createReadStream(media.path),
+                fileName: media.originalname,
+            });
+
+            media_url = imageKit.helper.buildSrc({
+                urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+                src: response.filePath,
+                transformation: [
+                    {
+                        width: 1280,
+                        quality: 'auto',
+                        format: 'webp',
+                    },
+                ],
+            });
         }
         //create Story
         const story = await Story.create({
-            user:userId,
+            user: userId,
             content,
             media_url,
             media_type,
@@ -33,32 +46,32 @@ export const addUserStory = async (req,res) =>{
 
         // schedule story deletion after 24 hours
         await inngest.send({
-            name:'app/story.delete',
-            data:{storyId:story._id}
+            name: 'app/story.delete',
+            data: { storyId: story._id }
         })
 
-        res.json({success:true});
-    }catch(error){
+        res.json({ success: true });
+    } catch (error) {
         console.log(error);
-        res.json({success:false,message:error.message});
+        res.json({ success: false, message: error.message });
     }
 }
 
 // Get User stories
-export const getStories = async (req,res) =>{
-    try{
-        const {userId} = req.auth;
+export const getStories = async (req, res) => {
+    try {
+        const { userId } = req.auth();
         const user = await User.findById(userId);
 
         //User connections and followings
-        const userIds = [userId,...user.connections,...user.following];
+        const userIds = [userId, ...user.connections, ...user.following];
 
         const stories = await Story.find({
-            user:{$in:userIds}
-        }).populate('user').sort({createdAt:-1});
-        res.json({success:true,stories})
-    }catch(error){
+            user: { $in: userIds }
+        }).populate('user').sort({ createdAt: -1 });
+        res.json({ success: true, stories })
+    } catch (error) {
         console.log(error);
-        res.json({success:false,message:error.message});
+        res.json({ success: false, message: error.message });
     }
 }

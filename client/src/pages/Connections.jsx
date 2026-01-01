@@ -1,14 +1,21 @@
 import {Users,UserPlus,UserCheck,UserRoundPen,MessageSquare} from 'lucide-react'
 import { useNavigate } from 'react-router'
-import { dummyConnectionsData as connections,
-        dummyFollowersData as followers,
-        dummyFollowingData as following,
-        dummyPendingConnectionsData as pendingConnections
-} from '../assets/assets'
+import { useSelector,useDispatch } from 'react-redux';
 import { useState } from 'react';
+import { useAuth } from '@clerk/clerk-react';
+import { useEffect } from 'react';
+import { fetchConnections } from '../features/connections/connectionSlice';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 const Connections = () => {
 
     const navigate = useNavigate();
+
+    const {getToken} = useAuth();
+
+    const dispatch = useDispatch();
+
+    const {connections,pendingConnections,followers,following} = useSelector((state)=>state.connections)
 
     const [currentTab,setCurrentTab] = useState('Followers')
 
@@ -18,6 +25,40 @@ const Connections = () => {
         {label:'Pending',value:pendingConnections, icon:UserRoundPen},
         {label:'Connections',value:connections, icon:UserPlus}
     ]
+
+    const handleUnfollow = async (userId) =>{
+        try{
+            const {data} = await api.post('/api/user/unfollow',{id:userId},{
+                headers:{Authorization:`Bearer ${await getToken()}`}
+            })
+            if(data.success){
+                toast.success(data.message);
+                dispatch(fetchConnections(await getToken()))
+            }else    toast(data.message)
+        }catch(error){
+            toast.error(error.message);
+        }
+    }
+
+    const acceptConnection = async (userId) =>{
+        try{
+            const {data} = await api.post('/api/user/accept',{id:userId},{
+                headers:{Authorization:`Bearer ${await getToken()}`}
+            })
+            if(data.success){
+                toast.success(data.message);
+                dispatch(fetchConnections(await getToken()))
+            }else   toast(data.message)
+        }catch(error){
+            toast.error(error.message);
+        }
+    }
+
+    useEffect(()=>{
+        getToken().then((token)=>{
+            dispatch(fetchConnections(token));
+        })
+    },[])
 
   return (
     <div className='min-h-screen bg-slate-50'>
@@ -64,13 +105,13 @@ const Connections = () => {
             {/* Connections */}
             <div className='flex flex-wrap gap-6 mt-6'>
                 {
-                    dataArray.find((item)=>item.label === currentTab).value.map((user)=>(
+                    dataArray.find((item)=>item.label === currentTab).value?.filter(user => user).map((user)=>(
                         <div key={user._id} className='w-full max-w-88 flex gap-5 p-6 bg-white shadow rounded-md'>
-                            <img src={user.profile_picture} alt="" className='rounded-full w-12 h-12 shadow-md mx-auto'/>
+                            <img src={user?.profile_picture} alt="" className='rounded-full w-12 h-12 shadow-md mx-auto'/>
                             <div className='flex-1'>
-                                <p className='font-medium text-slate-700'>{user.full_name}</p>
-                                <p className='text-slate-500'>@{user.username}</p>
-                                <p className='text-slate-500'>{user.bio.slice(0,30)}...</p>
+                                <p className='font-medium text-slate-700'>{user?.full_name}</p>
+                                <p className='text-slate-500'>@{user?.username}</p>
+                                <p className='text-slate-500'>{user?.bio?.slice(0,30)}...</p>
                                 <div className='flex max-sm:flex-col gap-2 mt-4'>
                                     {
                                         <button onClick={()=>navigate(`/profile/${user._id}`)} className='w-full p-2 text-sm rounded bg-gradient-to-r from-indigo-500
@@ -81,7 +122,7 @@ const Connections = () => {
                                     }
                                     {
                                         currentTab === 'Following' && (
-                                            <button className='w-full p-2 text-sm rounded bg-slate-100 hover:bg-slate-200 text-black active:scale-95
+                                            <button onClick={()=>handleUnfollow(user._id)} className='w-full p-2 text-sm rounded bg-slate-100 hover:bg-slate-200 text-black active:scale-95
                                             transition cursor-pointer'>
                                                 Unfollow
                                             </button>
@@ -89,7 +130,7 @@ const Connections = () => {
                                     }
                                     {
                                         currentTab === 'Pending' && (
-                                            <button className='w-full p-2 text-sm rounded bg-slate-100 hover:bg-slate-200 text-black active:scale-95
+                                            <button onClick={()=>acceptConnection(user._id)} className='w-full p-2 text-sm rounded bg-slate-100 hover:bg-slate-200 text-black active:scale-95
                                             transition cursor-pointer'>
                                                 Accept
                                             </button>
@@ -97,7 +138,7 @@ const Connections = () => {
                                     }
                                     {
                                         currentTab === 'Connections' && (
-                                            <button onClick={()=>navigate(`/messages/${user._id}`)} className='w-full p-2 text-sm rounded bg-slate-100 hover:bg-slate-200 text-black active:scale-95
+                                            <button onClick={()=>navigate(`/message/${user._id}`)} className='w-full p-2 text-sm rounded bg-slate-100 hover:bg-slate-200 text-black active:scale-95
                                             transition cursor-pointer flex items-center justify-center gap-1'>
                                                <MessageSquare className='w-4 h-4'/>
                                                 Message
