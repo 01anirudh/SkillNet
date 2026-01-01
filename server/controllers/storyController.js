@@ -36,6 +36,9 @@ export const addUserStory = async (req, res) => {
                     },
                 ],
             });
+            console.log("ImageKit Upload Response:", response);
+            media_url = response.url;
+            console.log("Generated Media URL:", media_url);
         }
         //create Story
         const story = await Story.create({
@@ -47,14 +50,19 @@ export const addUserStory = async (req, res) => {
         })
 
         // schedule story deletion after 24 hours
-        await inngest.send({
-            name: 'app/story.delete',
-            data: { storyId: story._id }
-        })
+        try {
+            await inngest.send({
+                name: 'app/story.delete',
+                data: { storyId: story._id }
+            })
+        } catch (inngestError) {
+            console.error("Inngest Event Error:", inngestError);
+            // Don't fail the request if Inngest fails, just log it.
+        }
 
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        console.error("Story Creation Error:", error);
         res.json({ success: false, message: error.message });
     }
 }

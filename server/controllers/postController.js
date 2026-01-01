@@ -35,7 +35,9 @@ export const addPost = async (req, res) => {
                             },
                         ],
                     });
-                    return (url);
+                    console.log("ImageKit Post Upload Response:", response);
+                    console.log("Using Post Image URL:", response.url);
+                    return (response.url);
                 })
             )
         }
@@ -47,7 +49,7 @@ export const addPost = async (req, res) => {
         })
         res.json({ success: true, message: "Post created successfully" });
     } catch (error) {
-        console.log(error);
+        console.error("Post Creation Error:", error);
         res.json({ success: false, message: error.message });
     }
 }
