@@ -3,6 +3,7 @@ import fs from 'fs'
 import imageKit from '../configs/imageKit.js';
 import Post from '../models/post.js';
 import User from '../models/user.js';
+import { toFile } from '@imagekit/nodejs';
 
 export const addPost = async (req, res) => {
     try {
@@ -15,9 +16,9 @@ export const addPost = async (req, res) => {
         if (images.length) {
             image_urls = await Promise.all(
                 images.map(async (image) => {
-
+                    const fileBuffer = fs.readFileSync(media.path)
                     const response = await imageKit.files.upload({
-                        file: fs.createReadStream(image.path),
+                        file: await toFile(fileBuffer, 'file'),
                         fileName: image.originalname,
                         folder: "posts",
                     });

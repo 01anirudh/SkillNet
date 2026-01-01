@@ -1,6 +1,7 @@
 
 import fs from 'fs';
 import imageKit from '../configs/imageKit.js';
+import { toFile } from '@imagekit/nodejs';
 import Story from "../models/story.js";
 import User from "../models/user.js";
 import { inngest } from "../inngest/index.js";
@@ -18,8 +19,9 @@ export const addUserStory = async (req, res) => {
 
         // upload media to imageKit
         if (media_type == 'image' || media_type == 'video') {
+            const fileBuffer = fs.readFileSync(media.path)
             const response = await imageKit.files.upload({
-                file: fs.createReadStream(media.path),
+                file: await toFile(fileBuffer, 'file'),
                 fileName: media.originalname,
             });
 

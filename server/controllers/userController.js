@@ -4,6 +4,7 @@ import Connection from "../models/connections.js";
 import Post from "../models/post.js";
 import User from "../models/user.js";
 import fs from 'fs';
+import { toFile } from '@imagekit/nodejs';
 
 // get user Data using userId
 export const getUserData = async (req, res) => {
@@ -53,13 +54,13 @@ export const updateUserData = async (req, res) => {
         const cover = req.files.cover && req.files.cover[0];
 
         if (profile) {
-            // const buffer = fs.readFileSync(profile.path)
+            const fileBuffer = fs.readFileSync(profile.path)
             // const response = imageKit.upload({
             //     file:buffer,
             //     filename:profile.originalname,
 
             // })
-            const response = await imageKit.files.upload({ file: fs.createReadStream(profile.path), fileName: profile.originalname });
+            const response = await imageKit.files.upload({ file: await toFile(fileBuffer, 'file'), fileName: profile.originalname });
 
             const url = imageKit.helper.buildSrc({
                 urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
@@ -76,8 +77,8 @@ export const updateUserData = async (req, res) => {
         }
 
         if (cover) {
-
-            const response = await imageKit.files.upload({ file: fs.createReadStream(cover.path), fileName: profile.originalname });
+            const fileBuffer = fs.readFileSync(cover.path)
+            const response = await imageKit.files.upload({ file: await toFile(fileBuffer, 'file'), fileName: profile.originalname });
 
 
             const url = imageKit.helper.buildSrc({
