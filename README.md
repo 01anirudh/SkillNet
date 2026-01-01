@@ -28,7 +28,7 @@ SkillNet is a modern, full-stack professional networking application built to co
 *   **Authentication**: Clerk (Server-side middleware verification)
 *   **Image Storage**: ImageKit (for optimized media handling)
 *   **Background Jobs**: Inngest (Serverless queues for cron jobs & event-driven logic)
-*   **Real-time**: Socket.io (for instant messaging)
+*   **Real-time**: Server-Sent Events (SSE) (for instant messaging)
 
 ## 📂 Project Structure
 
