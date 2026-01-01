@@ -16,7 +16,7 @@ await connectDB();
 
 app.use(express.json());
 app.use(cors({
-    origin: [process.env.FRONTEND_URL],
+    origin: ["http://localhost:5173", "https://skillnet-pi.vercel.app", process.env.FRONTEND_URL],
     credentials: true
 }));
 app.use(clerkMiddleware());
