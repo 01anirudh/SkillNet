@@ -77,7 +77,7 @@ const PostCard = ({post}) => {
                         <span className={`font-medium ${likes.includes(currentUser._id) ? 'text-red-500' : 'group-hover:text-red-500'}`}>{likes.length}</span>
                     </div>
             
-                    <div className='flex items-center gap-2 group cursor-pointer'>
+                    {/* <div className='flex items-center gap-2 group cursor-pointer'>
                         <MessageCircle className='w-5 h-5 text-slate-500 group-hover:text-blue-600 transition' />
                         <span className='font-medium group-hover:text-blue-600 transition'>{12}</span>
                     </div>
@@ -85,7 +85,7 @@ const PostCard = ({post}) => {
                     <div className='flex items-center gap-2 group cursor-pointer'>
                         <Share2 className='w-5 h-5 text-slate-500 group-hover:text-green-600 transition' />
                         <span className='font-medium group-hover:text-green-600 transition'>{7}</span>
-                    </div>
+                    </div> */}
                 </div>
             </div>
            
