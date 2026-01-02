@@ -7,7 +7,7 @@ import { toFile } from '@imagekit/nodejs';
 
 export const addPost = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { content, post_type } = req.body;
         const images = req.files;
 
@@ -56,7 +56,7 @@ export const addPost = async (req, res) => {
 
 export const getFeedPosts = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const user = await User.findById(userId);
 
         //Usr connections and followings
@@ -72,7 +72,7 @@ export const getFeedPosts = async (req, res) => {
 
 export const likePost = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { postId } = req.body;
 
         const post = await Post.findById(postId);
@@ -91,3 +91,4 @@ export const likePost = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 }
+
