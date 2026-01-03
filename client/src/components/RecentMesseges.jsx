@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { dummyRecentMessagesData } from '../assets/assets';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import moment from 'moment';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import toast from 'react-hot-toast';
@@ -9,6 +9,7 @@ import api from '../api/axios';
 const RecentMesseges = () => {
   
     const [messages,setMessages] = useState([]);
+    const navigate = useNavigate();
     const {user} = useUser();
     const {getToken} = useAuth();
 
@@ -59,7 +60,13 @@ const RecentMesseges = () => {
             {
                 messages.map((message,index)=>(
                     <Link to={`/message/${message.from_user_id._id}`} key={index} className='flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-slate-50 transition-colors group'>
-                        <img src={message.from_user_id.profile_picture} alt="" className='w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-blue-100 transition' />
+                        <img 
+                            onClick={(e)=>{
+                                e.preventDefault();
+                                navigate('/profile/'+message.from_user_id._id)
+                            }}
+                            src={message.from_user_id.profile_picture} alt="" className='w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-blue-100 transition' 
+                        />
                         <div className='flex-1 min-w-0'>
                             <div className='flex justify-between items-baseline mb-0.5'>
                                 <p className='font-medium text-slate-900 truncate'>{message.from_user_id.full_name}</p>

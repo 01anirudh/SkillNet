@@ -12,7 +12,7 @@ const SideBar = ({ sideBarOpen, setSideBarOpen }) => {
   const { signOut } = useClerk();
   return (
     <div
-      className={`w-60 xl:w-72 bg-white border-r border-slate-200 flex flex-col justify-between items-center max-sm:absolute top-0 bottom-0 z-20 h-screen
+      className={`w-60 xl:w-72 bg-white border-r border-slate-200 flex flex-col justify-between items-center max-sm:absolute top-0 bottom-0 z-20 h-screen sticky top-0
             ${
               sideBarOpen ? "translate-x-0 shadow-2xl" : "max-sm:-translate-x-full"
             } transition-all duration-300 ease-in-out`}
@@ -30,6 +30,7 @@ const SideBar = ({ sideBarOpen, setSideBarOpen }) => {
         </div>
 
         <Link
+          onClick={() => setSideBarOpen(false)}
           to="/create-post"
           className="flex items-center justify-center gap-2 py-3 mt-6 mx-6 rounded-xl bg-blue-700 hover:bg-blue-800 active:scale-95 transition text-white font-medium shadow-md shadow-blue-200"
         >

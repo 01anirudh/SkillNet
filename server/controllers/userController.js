@@ -9,7 +9,7 @@ import { toFile } from '@imagekit/nodejs';
 // get user Data using userId
 export const getUserData = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const user = await User.findById(userId);
         if (!user) {
             return res.json({ success: false, message: "User not found" })
@@ -27,7 +27,7 @@ export const getUserData = async (req, res) => {
 
 export const updateUserData = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         let { username, bio, location, full_name } = req.body;
 
         const tempUser = await User.findById(userId);
@@ -109,7 +109,7 @@ export const updateUserData = async (req, res) => {
 
 export const discoverUsers = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
 
         const { input } = req.body;
 
@@ -139,7 +139,7 @@ export const discoverUsers = async (req, res) => {
 
 export const followUser = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { id } = req.body;
 
         const user = await User.findById(userId)
@@ -169,7 +169,7 @@ export const followUser = async (req, res) => {
 
 export const unfollowUser = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { id } = req.body;
 
         const user = await User.findById(userId);
@@ -197,7 +197,7 @@ export const unfollowUser = async (req, res) => {
 
 export const sendConnectionRequest = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { id } = req.body;
 
         // Check if user has sent more than 20 connection requests in the last 24 hours
@@ -242,7 +242,7 @@ export const sendConnectionRequest = async (req, res) => {
 
 export const getUserConnections = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const user = await User.findById(userId).populate('connections followers following');
 
         const connections = user.connections.filter(c => c);
@@ -259,7 +259,7 @@ export const getUserConnections = async (req, res) => {
 
 export const acceptConnectionRequest = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { id } = req.body;
 
         const connection = await Connection.findOne({ from_user_id: id, to_user_id: userId });
@@ -309,7 +309,7 @@ export const getUserProfiles = async (req, res) => {
 // Get Suggested Users
 export const getSuggestedUsers = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const limit = parseInt(req.query.limit) || 5;
 
         // Get current user to access their following list

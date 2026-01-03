@@ -1,8 +1,45 @@
 import { Calendar, MapPin, PenBox, Verified } from 'lucide-react'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import moment from 'moment';
+import { useAuth } from '@clerk/clerk-react';
+import { useDispatch, useSelector } from 'react-redux';
+import api from '../api/axios';
+import { fetchUser } from '../features/user/userSlice';
+import toast from 'react-hot-toast';
 
 const UserProfileInfo = ({user,posts,profilId,setShowEdit}) => {
+    
+    const currentUser = useSelector((state)=>state.user.value);
+    const {getToken} = useAuth();
+    const dispatch = useDispatch();
+    const [isFollowing,setIsFollowing] = useState(false);
+
+    const handleFollow = async () => {
+        try {
+            const token = await getToken();
+            const endpoint = isFollowing ? '/api/user/unfollow' : '/api/user/follow';
+            const { data } = await api.post(endpoint, { id: user._id }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (data.success) {
+                toast.success(data.message);
+                setIsFollowing(!isFollowing);
+                // Update Redux state to reflect new following list
+                dispatch(fetchUser(token));
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    useEffect(() => {
+        if (currentUser && user) {
+            setIsFollowing(currentUser.following.includes(user._id));
+        }
+    }, [currentUser, user]);
   return (
     <div className='relative py-4 px-6 md:px-8 bg-white'>
         <div className='flex flex-col md:flex-row items-start gap-6'>
@@ -20,11 +57,17 @@ const UserProfileInfo = ({user,posts,profilId,setShowEdit}) => {
                     </div>
                     {/* if user is not on profile that means he is opening his profile so we will give edit button */}
                     {
-                        !profilId && 
+                        !profilId || currentUser._id === user._id ?  (
                         <button onClick={()=> setShowEdit(true)} className='flex items-center gap-2 border border-gray-300 hover:bg-gray-50 px-4 py-2
                         rounded-lg font-medium transition-colors mt-4 md:mt-0 cursor-pointer'>
                             <PenBox className='w-4 h-4'/> Edit
                         </button>
+                        ): (
+                            <button onClick={handleFollow} className={`flex items-center gap-2 border border-gray-300 px-6 py-2 rounded-full font-medium transition-colors mt-4 md:mt-0 cursor-pointer hover:shadow-md 
+                            ${isFollowing ? 'bg-gray-100 text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800 border-transparent'}`}>
+                             {isFollowing ? 'Following' : 'Follow'}
+                        </button>
+                        )
                     }
                 </div>
                 <p className='text-gray-700 text-sm max-w-md mt-4'>{user.bio}</p>

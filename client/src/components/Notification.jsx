@@ -10,7 +10,7 @@ const Notification = ({t,message}) => {
     <div className={`max-w-md w-full bg-white shadow-lg rounded-lg flex border border-gray-300 hover:scale-105 transition`}>
         <div className='flex-1 p-4'>
             <div className='flex items-start'>
-                <img src={message.from_user_id.profile_picture} alt="" className='h-10 w-10 rounded-full flex-shrink-0 mt-0.5'/>
+                <img onClick={()=>navigate('/profile/'+message.from_user_id._id)} src={message.from_user_id.profile_picture} alt="" className='h-10 w-10 rounded-full flex-shrink-0 mt-0.5 cursor-pointer'/>
                 <div className='ml-3 flex-1'>
                 <p className='text-sm font-medium text-gray-900'>{message.from_user_id.full_name}</p>
                 <p className='text-sm text-gray-500'>{message.text.split(0,50)}</p>

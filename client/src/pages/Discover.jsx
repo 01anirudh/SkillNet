@@ -12,7 +12,7 @@ import api from '../api/axios';
 
 
 const Discover = () => {
-    const [input,setInput] = useState([]);
+    const [input,setInput] = useState('');
     const [users,setUsers] = useState([]);
     const [loading,setLoading] = useState(false);
     const {getToken} = useAuth();

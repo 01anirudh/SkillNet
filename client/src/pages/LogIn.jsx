@@ -29,7 +29,7 @@ const LogIn = () => {
                     />
                   ))}
               </div>
-              <p>Used by 12k+ developers</p>
+              <p>Used by top developers</p>
             </div>
           </div>
           <h1 className="text-3xl md:text-6xl md:pb-2 font-bold bg-gradient-to-t from-indigo-950 to-indigo-800 bg-clip-text text-transparent">

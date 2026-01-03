@@ -4,10 +4,12 @@ import { useSelector } from 'react-redux';
 import { useAuth } from '@clerk/clerk-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 
 const StoryViewer = ({viewStory,setViewStory}) => {
 
     const [progress,setProgress] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         let timer,progressInterval;
@@ -100,8 +102,8 @@ const StoryViewer = ({viewStory,setViewStory}) => {
 
         {/* {User Info - Top-left} */}
 
-        <div className='absolute top-4 left-4 flex items-center space-x-3 p-2 px-4 sm:p-4 sm:px-8 backdrop-blur-2xl rounded bg-black/50'>
-            <img src={viewStory.user?.profile_picture} alt="" className='ize-7 sm:size-8 rounded-full object-cover border border-white' />
+        <div onClick={()=>navigate('/profile/'+viewStory.user._id)} className='absolute top-4 left-4 flex items-center space-x-3 p-2 px-4 sm:p-4 sm:px-8 backdrop-blur-2xl rounded bg-black/50 cursor-pointer hover:bg-black/60 transition z-50'>
+            <img src={viewStory.user?.profile_picture} alt="" className='size-10 rounded-full object-cover border border-white' />
             <div className='text-white font-medium flex items-center gap-1.5'>
                 <span >{viewStory.user?.full_name}</span>
                 <BadgeCheck size={18}/>

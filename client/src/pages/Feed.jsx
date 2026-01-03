@@ -25,7 +25,7 @@ const Feed = () => {
     }, [dispatch]);
   
     return !loading ? (
-    <div className='h-full overflow-y-scroll no-scrollbar py-10 xl:pr-5 flex items-start justify-center xl:gap-8'>
+    <div className='py-10 xl:pr-5 flex items-start justify-center xl:gap-8'>
         {/* {Stories and post linst} */}
         <div >
             <StoriesBar/>

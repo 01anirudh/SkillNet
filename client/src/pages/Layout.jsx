@@ -9,9 +9,9 @@ const Layout = () => {
   const user = useSelector((state)=>state.user.value);
   const [sideBarOpen, setSideBarOpen] = useState(false);
   return user ? (
-    <div className="w-full flex h-screen">
+    <div className="w-full flex h-screen overflow-hidden">
       <SideBar sideBarOpen={sideBarOpen} setSideBarOpen={setSideBarOpen}/>
-      <div className="flex-1 bg-slate-50">
+      <div className="flex-1 bg-slate-50 h-full overflow-y-auto">
         <Outlet />
       </div>
       {sideBarOpen ? (
