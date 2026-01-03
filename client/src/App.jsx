@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux'
 import { fetchUser } from './features/user/userSlice'
 import { fetchConnections } from './features/connections/connectionSlice'
 import { addMessage } from './features/messages/meesagesSlice'
+import { updatePostLikes } from './features/post/postSlice'
 import Notification from './components/Notification'
 import Loading from './components/Loading'
 
@@ -48,7 +49,14 @@ const App = () => {
       const eventSource =new EventSource(baseUrl + '/api/message/' + user.id);
 
       eventSource.onmessage = (event) =>{
-        const message = JSON.parse(event.data)
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'like_update') {
+            dispatch(updatePostLikes({ postId: data.postId, likes_count: data.likes_count }));
+            return;
+        }
+
+        const message = data;
         
         if(pathnameRef.current === ('/message/' + message.from_user_id._id)){
           dispatch(addMessage(message))
@@ -59,6 +67,12 @@ const App = () => {
           ),{position:'bottom-right'})
         }
       }
+      eventSource.onerror = (err) => {
+        console.error("EventSource failed:", err);
+        // eventSource.close(); 
+        // Let browser try to reconnect automatically
+      };
+
       return ()=>{
         eventSource.close();
       }

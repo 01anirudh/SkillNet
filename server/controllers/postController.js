@@ -4,6 +4,7 @@ import imageKit from '../configs/imageKit.js';
 import Post from '../models/post.js';
 import User from '../models/user.js';
 import { toFile } from '@imagekit/nodejs';
+import { connections } from '../utils/connections.js';
 
 export const addPost = async (req, res) => {
     try {
@@ -80,12 +81,54 @@ export const likePost = async (req, res) => {
         if (post.likes_count.includes(userId)) {
             post.likes_count = post.likes_count.filter(user => user !== userId);
             await post.save();
+            // Broadcast update
+            const eventData = {
+                type: 'like_update',
+                postId,
+                likes_count: post.likes_count
+            };
+            Object.values(connections).forEach(connection => {
+                connection.write(`data: ${JSON.stringify(eventData)}\n\n`);
+            });
             res.json({ success: true, message: 'Post unliked' });
         } else {
             post.likes_count.push(userId);
             await post.save();
+            // Broadcast update
+            const eventData = {
+                type: 'like_update',
+                postId,
+                likes_count: post.likes_count
+            };
+            Object.values(connections).forEach(connection => {
+                connection.write(`data: ${JSON.stringify(eventData)}\n\n`);
+            });
             res.json({ success: true, message: 'Post liked' });
         }
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+
+export const deletePost = async (req, res) => {
+    try {
+        const { userId } = req.auth;
+        const { postId } = req.params;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.json({ success: false, message: 'Post not found' });
+        }
+
+        if (post.user.toString() !== userId) {
+            return res.json({ success: false, message: 'Not authorized to delete this post' });
+        }
+
+        await Post.findByIdAndDelete(postId);
+        res.json({ success: true, message: 'Post deleted successfully' });
+
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });

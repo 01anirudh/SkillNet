@@ -1,5 +1,9 @@
-import { BadgeCheck, X } from 'lucide-react'
+import { BadgeCheck, X, Trash2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
+import { useAuth } from '@clerk/clerk-react';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 const StoryViewer = ({viewStory,setViewStory}) => {
 
@@ -35,6 +39,29 @@ const StoryViewer = ({viewStory,setViewStory}) => {
     },[viewStory,setViewStory])
 
     const handleClose =()=> {setViewStory(null)}
+
+    const currentUser = useSelector((state) => state.user.value);
+    const { getToken } = useAuth();
+
+    const handleDelete = async () => {
+        if (confirm("Delete this story?")) {
+            try {
+                const token = await getToken();
+                const { data } = await api.delete(`/api/story/delete/${viewStory._id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (data.success) {
+                    toast.success(data.message);
+                    setViewStory(null);
+                    window.location.reload(); 
+                } else {
+                    toast.error(data.message);
+                }
+            } catch (error) {
+                toast.error(error.message);
+            }
+        }
+    }
 
     if(!viewStory) return null;
 
@@ -80,6 +107,13 @@ const StoryViewer = ({viewStory,setViewStory}) => {
                 <BadgeCheck size={18}/>
             </div>
         </div>
+            {/* {Delete Button} */}
+            {viewStory.user?._id === currentUser?._id && (
+                <button onClick={handleDelete} className='absolute bottom-4 right-4 text-white p-2 bg-red-600/80 rounded-full hover:bg-red-700 transition z-50'>
+                    <Trash2 className='w-6 h-6' />
+                </button>
+            )}
+
             {/* {Close Button} */}
             <button onClick={handleClose} className='absolute top-4 right-4 text-white text-3xl font-bold focus:outline-none' >
                 <X className='w-8 h-8 hover:scale-110 transition cursor-pointer'/>

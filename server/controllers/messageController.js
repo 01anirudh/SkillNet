@@ -4,7 +4,7 @@ import fs from 'fs';
 
 // Create an empty object to store SS Event connections
 
-const connections = {};
+import { connections } from "../utils/connections.js";
 
 // Controller function for the SSE endpoint
 export const sseController = (req, res) => {
