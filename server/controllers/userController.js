@@ -245,9 +245,14 @@ export const getUserConnections = async (req, res) => {
         const { userId } = req.auth;
         const user = await User.findById(userId).populate('connections followers following');
 
-        const connections = user.connections.filter(c => c);
-        const following = user.following.filter(f => f);
-        const followers = user.followers.filter(f => f);
+        // Deduplicate connections using Set and Map to ensure unique objects by _id
+        const uniqueConnections = Array.from(new Map(user.connections.map(item => [item._id.toString(), item])).values());
+        const uniqueFollowing = Array.from(new Map(user.following.map(item => [item._id.toString(), item])).values());
+        const uniqueFollowers = Array.from(new Map(user.followers.map(item => [item._id.toString(), item])).values());
+
+        const connections = uniqueConnections.filter(c => c);
+        const following = uniqueFollowing.filter(f => f);
+        const followers = uniqueFollowers.filter(f => f);
 
         const pendingConnections = (await Connection.find({ to_user_id: userId, status: 'pending' }).populate('from_user_id')).map((connection) => connection.from_user_id).filter(c => c);
         res.json({ success: true, connections, followers, following, pendingConnections })
@@ -269,14 +274,20 @@ export const acceptConnectionRequest = async (req, res) => {
         }
 
         const user = await User.findById(userId);
-        user.connections.push(id);
 
-        await user.save();
+        // Check if already connected before pushing
+        if (!user.connections.includes(id)) {
+            user.connections.push(id);
+            await user.save();
+        }
 
         const toUser = await User.findById(id);
-        toUser.connections.push(userId);
 
-        await toUser.save();
+        // Check if already connected before pushing
+        if (!toUser.connections.includes(userId)) {
+            toUser.connections.push(userId);
+            await toUser.save();
+        }
 
         connection.status = 'accepted';
         await connection.save();
