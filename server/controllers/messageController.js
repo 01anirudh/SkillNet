@@ -81,12 +81,14 @@ export const sendMessage = async (req, res) => {
             connections[to_user_id].write(`data: ${JSON.stringify(messageWithUserData)}\n\n`);
         }
 
+        console.log("Sending Inngest event: app/message.sent");
         await inngest.send({
             name: 'app/message.sent',
             data: {
                 messageId: message._id
             }
         })
+        console.log("Inngest event sent successfully");
 
     } catch (error) {
         console.log(error);

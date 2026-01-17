@@ -179,8 +179,16 @@ const sendMessageNotification = inngest.createFunction(
     { id: 'send-message-notification' },
     { event: 'app/message.sent' },
     async ({ event }) => {
+        console.log("Inngest function triggered: send-message-notification");
         const { messageId } = event.data;
+        console.log(`Processing messageId: ${messageId}`);
+
         const message = await Message.findById(messageId).populate('from_user_id to_user_id');
+
+        if (!message) {
+            console.error(`Message not found for id: ${messageId}`);
+            return;
+        }
 
         const subject = `New Message from ${message.from_user_id.full_name}`;
 
