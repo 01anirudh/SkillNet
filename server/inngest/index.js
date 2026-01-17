@@ -132,7 +132,7 @@ const deleteStory = inngest.createFunction(
         await step.sleepUntil('wait-for-24-hours', in24Hours);
         await step.run('delete-story', async () => {
             await Story.findByIdAndDelete(storyId);
-            return { message: "Stroy deleted" }
+            return { message: "Story deleted" }
         })
     }
 )
@@ -142,7 +142,7 @@ const sendNotificationOfUnseenMessages = inngest.createFunction(
     { id: "send-unseen-messages-notification" },
     { cron: "TZ=America/New_York 0 9 * * *" }, // Everyday 9 AM
     async ({ step }) => {
-        const messages = (await Message.find({ seen: false })).populate('to_user_id');
+        const messages = await Message.find({ seen: false }).populate('to_user_id');
         const unseenCount = {};
 
         messages.map(message => {

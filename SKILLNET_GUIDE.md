@@ -112,20 +112,48 @@ I use **Inngest** as an event-driven queue to handle background tasks and schedu
 **Q: Why use Inngest for Story Deletion instead of just checking the date on the frontend?**
 **A:** "Security and Reliability. If I only checked on the frontend, the data would still exist in the database. Using Inngest, the deletion happens on the server side exactly 24 hours later, ensuring the data is truly removed according to the logic, without me needing to manage a complex scheduler server."
 
+**Q: Does Inngest create a new function for every single story?**
+**A:** "No. There is **one function definition** in my code (`deleteStory`). However, for every story posted, Inngest creates a **new execution (run)** of that function.
+*   If 100 users post stories, there are 100 'runs' sleeping in the background.
+*   Each run is independent and remembers its own `storyId`.
+*   It's similar to how one `addUser` controller handles thousands of user signups; one code definition, many executions."
+
 ---
 
-## 5. Technical Deep Dive: File Uploads
+## 5. Technical Deep Dive: File Uploads & Multer
 
 *Handling images for posts and chat.*
 
 ### The Implementation
-*   **Multer**: Used as middleware to parse `multipart/form-data` requests. It temporarily holds the file in memory or local storage.
-*   **ImageKit**: I stream the file from the server to ImageKit's CDN APIs.
-*   **Optimization**: ImageKit automatically optimizes the format (WebP) and resizing, ensuring the app stays fast even with image-heavy feeds.
+*   **Multer**: Used as middleware to parse `multipart/form-data` requests.
+*   **Storage Strategy**: I configured Multer with `diskStorage`. This means when a user uploads a file, it is briefly saved to the server's temporary disk space.
+*   **Cloud Upload**: I then read this file from the disk and stream it to **ImageKit**.
+*   **Cleanup**: One the upload is complete, the temporary file is redundant (and usually cleaned up by the OS or manually).
+
+### Interview Q&A
+**Q: Why do you need Multer? Can't Express handle files?**
+**A:** "No, by default, Express can only parse `application/json` (text data). It doesn't know how to handle `multipart/form-data` (which is how files are sent).
+Multer acts as a **bridge/middleware**. It intercepts the incoming stream, pieces together the binary file data, and makes it available to me as `req.file`. Without it, `req.body` would be empty for file uploads."
 
 ---
 
-## 6. Potential Scenario Questions
+## 6. Architectural Decision: Why MongoDB?
+
+*Choosing the right database for a social platform.*
+
+**Q: Why did you choose MongoDB (NoSQL) over a SQL database like PostgreSQL?**
+**A:** I chose MongoDB for three main reasons:
+
+1.  **Flexible Schema (Schemaless)**:
+    *   In a social media app, data structures evolve fast. For example, if I want to add "Reactions" to a Message document later, I can just add that field without running complex migration scripts (ALTER TABLE) that would fetch down the database in SQL.
+2.  **JSON-Native**:
+    *   I'm using JavaScript everywhere (React frontend, Node backend). MongoDB stores data in BSON (Binary JSON). This means objects look exactly the same in my database, my backend code, and my frontend. There fits naturally without needing an ORM to convert "Rows" into "Objects".
+3.  **Horizontal Scalability (Sharding)**:
+    *   Social apps generate massive amounts of unstructured data (chat logs, activity feeds). MongoDB works great for this because it's designed to be distributed across many servers easily if the app grows to millions of users.
+
+---
+
+## 7. Potential Scenario Questions
 
 **Scenario 1: Scaling**
 *Interviewer: "If you had 10,000 active users, would your current SSE implementation work?"*
