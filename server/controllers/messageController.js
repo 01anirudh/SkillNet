@@ -1,4 +1,5 @@
 import imageKit from "../configs/imageKit.js";
+import { inngest } from "../inngest/index.js";
 import Message from "../models/message.js";
 import fs from 'fs';
 
@@ -79,6 +80,13 @@ export const sendMessage = async (req, res) => {
         if (connections[to_user_id]) {
             connections[to_user_id].write(`data: ${JSON.stringify(messageWithUserData)}\n\n`);
         }
+
+        await inngest.send({
+            name: 'app/message.sent',
+            data: {
+                messageId: message._id
+            }
+        })
 
     } catch (error) {
         console.log(error);

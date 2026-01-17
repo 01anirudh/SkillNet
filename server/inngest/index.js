@@ -174,6 +174,35 @@ const sendNotificationOfUnseenMessages = inngest.createFunction(
     }
 )
 
+
+const sendMessageNotification = inngest.createFunction(
+    { id: 'send-message-notification' },
+    { event: 'app/message.sent' },
+    async ({ event }) => {
+        const { messageId } = event.data;
+        const message = await Message.findById(messageId).populate('from_user_id to_user_id');
+
+        const subject = `New Message from ${message.from_user_id.full_name}`;
+
+        const body = `
+        <div style="font-family: Arial, sans-serif; padding:20px;">
+            <h2>Hi ${message.to_user_id.full_name},</h2>
+            <p>You have a new message from ${message.from_user_id.full_name} - @${message.from_user_id.username}</p>
+            <p>${message.text || 'Sent an image'}</p>
+            <p>Click <a href="${process.env.FRONTEND_URL}/messages" style="color:#10b981;">here</a> to reply</p>
+            <br/>
+            <p>Thanks,<br/>SkillNet - Stay Connected</p>
+        </div>
+        `
+
+        await sendEmail({
+            to: message.to_user_id.email,
+            subject,
+            body
+        })
+    }
+)
+
 // Create an empty array where we'll export future Inngest functions
 export const functions = [
     syncUserCreation,
@@ -181,5 +210,6 @@ export const functions = [
     syncUserDeletion,
     sendNewConnectionRequestReminder,
     deleteStory,
-    sendNotificationOfUnseenMessages
+    sendNotificationOfUnseenMessages,
+    sendMessageNotification
 ];
